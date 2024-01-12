@@ -38,7 +38,7 @@ def test_FastaParser():
 
 def test_FastaFormat():
     """
-    Test to make sure that a fasta file is being read in if a fastq file is
+    Test to make sure that a fasta file is being read in. If a fastq file is
     read, the first item is None
     """
     pass
