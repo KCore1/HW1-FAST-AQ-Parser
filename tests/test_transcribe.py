@@ -3,6 +3,7 @@
 from seqparser import (
         transcribe,
         reverse_transcribe)
+import pytest
 
 
 def test_freebie_transcribe_1():
@@ -23,13 +24,22 @@ def test_freebie_transcribe_2():
         
 def test_transcribe():
     """
-    Write your unit test for the transcribe function here.
+    Unit test for transcribe function
     """
-    pass
+    assert transcribe("AAA") == "UUU"
+    assert transcribe("GGG") == "CCC"
+    assert transcribe("CCC") == "GGG"
+    assert transcribe("TTT") == "AAA"
+    assert transcribe("AAATTTCCTGAA") == "UUUAAAGGACUU"
+    assert transcribe("AAATTTCCTGAA", reverse=True) == "UUCAGGAAAUUU"
+    with pytest.raises(ValueError):
+        transcribe("SAXOPHONE")
+
 
 
 def test_reverse_transcribe():
     """
     Write your unit test for the reverse transcribe function here.
     """
-    pass
+    assert reverse_transcribe("AAA") == "UUU"
+    assert reverse_transcribe("GAATTC") == "GAAUUC"
