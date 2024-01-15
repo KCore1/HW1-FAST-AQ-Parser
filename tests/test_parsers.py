@@ -1,4 +1,5 @@
 # write tests for parsers
+# NOTE: Must run pytest -v from the root directory of the project
 
 from seqparser import (
         FastaParser,
@@ -31,9 +32,27 @@ def test_FastaParser():
 
     Some example of "good" test cases might be handling edge cases, like Fasta
     files that are blank or corrupted in some way. Two example Fasta files are
-    provided in /tests/bad.fa and /tests/empty.fa
+    provided in /tests/bad.fa and /tests/blank.fa
     """
-    pass
+    parser = FastaParser("data/test.fa")
+    assert parser.filename == "data/test.fa"
+    ALLOWED_CHARS = set("ACGTU")
+
+    for tup in parser:
+        assert len(tup) == 2
+        assert type(tup) == tuple
+        assert type(tup[0]) == str
+        assert type(tup[1]) == str
+        assert len(tup[1]) > 0
+        assert all(char in ALLOWED_CHARS for char in tup[1])
+
+    with pytest.raises(ValueError):
+        for tup in FastaParser("tests/bad.fa"):
+            pass
+
+    with pytest.raises(ValueError):
+        for tup in FastaParser("tests/blank.fa"):
+            pass
 
 
 def test_FastaFormat():
@@ -41,7 +60,12 @@ def test_FastaFormat():
     Test to make sure that a fasta file is being read in. If a fastq file is
     read, the first item is None
     """
-    pass
+    for tup in FastaParser("data/test.fq"):
+        assert tup[0] is None # verifying expected behavior
+        break
+    for tup in FastaParser("data/test.fa"):
+        assert tup[0] is not None
+        break
 
 
 def test_FastqParser():
@@ -50,11 +74,30 @@ def test_FastqParser():
     an instance of your FastqParser class and assert that it properly reads 
     in the example Fastq File.
     """
-    pass
+    parser = FastqParser("data/test.fq")
+    assert parser.filename == "data/test.fq"
+    ALLOWED_CHARS = set("ACGTU")
+    ALLOWED_QUAL = set("\"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~")
+
+    for tup in parser:
+        assert len(tup) == 3
+        assert type(tup) == tuple
+        assert type(tup[0]) == str
+        assert type(tup[1]) == str
+        assert type(tup[2]) == str
+        assert len(tup[1]) > 0
+        assert len(tup[2]) > 0
+        assert all(char in ALLOWED_CHARS for char in tup[1])
+        assert all(char in ALLOWED_QUAL for char in tup[2])
 
 def test_FastqFormat():
     """
     Test to make sure fastq file is being read in. If this is a fasta file, the
     first line is None
     """
-    pass
+    for tup in FastqParser("data/test.fa"):
+        assert tup[0] is None # again, verifying expected behavior
+        break
+    for tup in FastqParser("data/test.fq"):
+        assert tup[0] is not None
+        break
